@@ -5,21 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (web)",
-            "type": "coreclr",
+            "name": "Python: Flask",
+            "type": "python",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/aspnetapp.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "console": "internalConsole",
-            "stopAtEntry": false,
+            "module": "flask",
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "FLASK_APP": "app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "0"
             },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
-            }
+            "args": [
+                "run",
+                "--host","0.0.0.0",
+                "--port","9000",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true
         }
     ]
 }

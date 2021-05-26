@@ -1,10 +1,10 @@
-# Try Out Development Containers: .NET Core
+# Try Out Development Containers: Python
 
 A **development container** is a running [Docker](https://www.docker.com) container with a well-defined tool/runtime stack and its prerequisites. You can try out development containers with **[GitHub Codespaces](https://github.com/features/codespaces)** or **[Visual Studio Code Remote - Containers](https://aka.ms/vscode-remote/containers)**.
 
 This is a sample project that lets you try out either option in a few easy steps. We have a variety of other [vscode-remote-try-*](https://github.com/search?q=org%3Amicrosoft+vscode-remote-try-&type=Repositories) sample projects, too.
 
-> **Note:** If you already have a Codespace or dev container, you can jump to the [Things to try](#things-to-try) section.
+> **Note:** If you already have a Codespace or dev container, you can jump to the [Things to try](#things-to-try) section. 
 
 ## Setting up the development container
 
@@ -23,16 +23,14 @@ Follow these steps to open this sample in a container using the VS Code Remote -
 2. To use this repository, you can either open the repository in an isolated Docker volume:
 
     - Press <kbd>F1</kbd> and select the **Remote-Containers: Try a Sample...** command.
-    - Choose the ".NET Core" sample, wait for the container to start, and try things out!
-        > **Note:** Under the hood, this will use the **Remote-Containers: Clone Repository in Container Volume...** command to clone the source code in a Docker volume instead of the local filesystem. [Volumes](https://docs.docker.com/storage/volumes/) are the preferred mechanism for persisting container data.
+    - Choose the "Python" sample, wait for the container to start, and try things out!
+        > **Note:** Under the hood, this will use the **Remote-Containers: Clone Repository in Container Volume...** command to clone the source code in a Docker volume instead of the local filesystem. [Volumes](https://docs.docker.com/storage/volumes/) are the preferred mechanism for persisting container data.   
 
    Or open a locally cloned copy of the code:
 
    - Clone this repository to your local filesystem.
    - Press <kbd>F1</kbd> and select the **Remote-Containers: Open Folder in Container...** command.
    - Select the cloned copy of this folder, wait for the container to start, and try things out!
-
-3. If you want to enable **HTTPS**, see [enabling HTTPS](#enabling-https) to reuse your local development cert in the container.
 
 ## Things to try
 
@@ -42,96 +40,47 @@ Once you have this sample opened, you'll be able to work with it like you would 
 
 Some things to try:
 
-1. **Restore Packages:** When notified by the C# extension to install packages, click Restore to trigger the process from inside the container!
-
-2. **Edit:**
-   - Open `Program.cs`
+1. **Edit:**
+   - Open `app.py`
    - Try adding some code and check out the language features.
 
-3. **Terminal:** Press <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>\`</kbd> and type `dotnet --version` and other Linux commands from the terminal window.
+2. **Terminal:** 
+    - Press <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>\`</kbd> to open a terminal window.
+    - Type `python -m flask run --port 9000 --no-debugger --no-reload` to run the app.
+         - The terminal will say your app is `Running on http://127.0.0.1:9000/`. Click on the link in the terminal to view your app running in the browser.
+    - Notice that the Python extension is already installed in the container since the `.devcontainer/devcontainer.json` lists `"ms-python.python"` as an extension to install automatically when the container is created.
+    
+      > **Tip:** If you use this container outside of VS Code via `docker run` with `-p 9000`, you may need to append `--host 0.0.0.0` to the command above. The `-p` option "publishes" the port rather than forwarding it. It therefore will not work if the application only listens to localhost. The `forwardPorts` property in `devcontainer.json` does not have this limitation, but you can use `appPort` property instead if you want to mirror the `docker run` behavior.
 
-4. **Build, Run, and Debug:**
-   - Open `Program.cs`
-   - Add a breakpoint (e.g. on line 21).
+3. **Build, Run, and Debug:**
+   - Open `app.py`
+   - Add a breakpoint (e.g. on line 9).
    - Press <kbd>F5</kbd> to launch the app in the container.
-   - Once the breakpoint is hit, try hovering over variables, examining locals, and more.   
-   - Continue (<kbd>F5</kbd>). You can connect to the server in the container by clicking "Open in Browser" next to port 5000 in the 'Ports' view (you can get to the 'Ports' view by clicking on the "2" in the status bar, which means your app has 2 forwarded ports).
+   - Once the breakpoint is hit, try hovering over variables (e.g. the app variable on line 7), examining locals, and more.
+   - Continue (<kbd>F5</kbd>). You can connect to the server in the container by either: 
+      - Clicking on `Open in Browser` in the notification telling you: `Your service running on port 9000 is available`.
+      - Clicking the globe icon in the 'Ports' view. The 'Ports' view gives you an organized table of your forwarded ports, and you can access it with the command **Ports: Focus on Ports View**.
+   - Notice port 9000 in the 'Ports' view is labeled "Hello Remote World." In `devcontainer.json`, you can set `"portsAttributes"`, such as a label for your forwarded ports and the action to be taken when the port is autoforwarded.
+   
+   > **Note:** In Remote - Containers, you can access your app at `http://localhost:9000` in a local browser. But in a browser-based Codespace, you must click the link from the notification or the `Ports` view so that the service handles port forwarding in the browser and generates the correct URL.
 
-   > **Note:** In Remote - Containers, you can access your app at `http://localhost:5000` in a local browser. But in a browser-based Codespace, you must click the link from the `Ports` view so that the service handles port forwarding in the browser and generates the correct URL.
-
-5. **Rebuild or update your container** (*Currently, only containers with the VS Code Remote - Containers extension can be rebuilt.*)
+4. **Rebuild or update your container**
 
    You may want to make changes to your container, such as installing a different version of a software or forwarding a new port. You'll rebuild your container for your changes to take effect. 
 
-   **Forward a port statically:** As an example change, let's forward a port statically in the `.devcontainer/devcontainer.json` file. 
-
-   > **Note:** Remote-Containers and Codespaces also take care of dynamic port forwarding, but there may be instances in which we want to statically declare a forwarded port. 
+   **Open browser automatically:** As an example change, let's update the `portsAttributes` in the `.devcontainer/devcontainer.json` file to open a browser when our port is automatically forwarded.
    
    - Open the `.devcontainer/devcontainer.json` file.
-   - Uncomment the `forwardedPorts` attribute and adjust the port numbers as needed.
-   - Press <kbd>F1</kbd> and select the **Remote-Containers: Rebuild Container** command so the modifications are picked up.
+   - Modify the `"onAutoForward"` attribute in your `portsAttributes` from `"notify"` to `"openBrowser"`.
+   - Press <kbd>F1</kbd> and select the **Remote-Containers: Rebuild Container** or **Codespaces: Rebuild Container** command so the modifications are picked up.  
 
-### Enabling HTTPS
+### More samples
 
-To enable HTTPS for this sample, you can mount an exported copy of a locally generated dev certificate. Note that these instructions assume you already have the `dotnet` CLI installed on your local operating system.
-
-1. Enable HTTPS in the sample by updating the `env` property in `.vscode/launch.json` as follows:
-
-   ```json
-   "env": {
-         "ASPNETCORE_ENVIRONMENT": "HttpsDevelopment"
-   }
-   ```
-
-2. Next, export the SSL cert using the following command:
-
-    **Windows PowerShell**
-
-    ```powershell
-    dotnet dev-certs https --trust; dotnet dev-certs https -ep "$env:USERPROFILE/.aspnet/https/aspnetapp.pfx" -p "SecurePwdGoesHere"
-    ```
-
-    **macOS/Linux terminal**
-
-    ```powershell
-    dotnet dev-certs https --trust; dotnet dev-certs https -ep "${HOME}/.aspnet/https/aspnetapp.pfx" -p "SecurePwdGoesHere"
-    ```
-
-3. Add the following in to `.devcontainer/devcontainer.json`:
-
-    ```json
-    "remoteEnv": {
-        "ASPNETCORE_Kestrel__Certificates__Default__Password": "SecurePwdGoesHere",
-        "ASPNETCORE_Kestrel__Certificates__Default__Path": "/home/vscode/.aspnet/https/aspnetapp.pfx",
-    }
-    ```
-
-4. Finally, make the certificate available in the container as follows:
-
-    **If using GitHub Codespaces and/or Remote - Containers**
-
-    1. Start the container/codespace
-    2. Drag `~/.aspnet/https/aspnetapp.pfx` from your local machine into the root of the File Explorer in VS Code.
-    3. Open a terminal in VS Code and run:
-        ```bash
-        mkdir -p /home/vscode/.aspnet/https && mv aspnetapp.pfx /home/vscode/.aspnet/https
-        ```
-
-    **If using only Remote - Containers with a local container**
-
-    Add the following to `.devcontainer/devcontainer.json`:
-
-    ```json
-    "mounts": [ "source=${env:HOME}${env:USERPROFILE}/.aspnet/https,target=/home/vscode/.aspnet/https,type=bind" ]
-    ```
-
-5. If you've already opened your folder in a container, rebuild the container using the **Remote-Containers: Rebuild Container** command from the Command Palette (<kbd>F1</kbd>) so the settings take effect.
-
-Next time you debug using VS Code (<kbd>F5</kbd>), you'll be able to use HTTPS! Note that you will need to specifically navigate to `https://localhost:5001` to get the certificate to work (**not** `https://127.0.0.1:5001`).
+- [Tweeter App - Python and Django](https://github.com/Microsoft/python-sample-tweeterapp)
 
 ## Contributing
 
-This project welcomes contributions and suggestions. Most contributions require you to agree to a
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.microsoft.com.
 
